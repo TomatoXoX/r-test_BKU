@@ -6,7 +6,8 @@
 .devcontainer
 .idea
 .env
-
+.out
+.sum
 
 # cmake outputs
 CMakeCache.txt
@@ -23,6 +24,7 @@ install_manifest.txt
 *.exe
 vtk*
 *.lib
+.outb
 
 # temporary matlab files
 *.asv

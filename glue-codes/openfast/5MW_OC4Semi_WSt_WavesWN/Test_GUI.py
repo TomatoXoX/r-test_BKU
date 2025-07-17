@@ -40,7 +40,14 @@ class OpenFASTTestCaseGUI:
         self.discovered_parameters = {}
         self.file_structure = {}
         self.openfast_exe = tk.StringVar()
-        
+        # For multi-threading in the run tab
+        self.num_threads = tk.IntVar(value=max(1, os.cpu_count() // 2))
+        self.run_button = None
+        self.job_queue = queue.Queue()
+        self.progress_lock = threading.Lock()
+        self.completed_cases = 0
+        self.total_cases_to_run = 0
+
         # Queue for thread communication
         self.message_queue = queue.Queue()
         
@@ -78,51 +85,58 @@ class OpenFASTTestCaseGUI:
         self.create_log_section(scrollable_frame)
         
     def create_run_tab(self):
-        """Create the run tests tab"""
+        """Create the run tests tab with multi-threading options"""
         main_frame = ttk.Frame(self.run_tab, padding="10")
         main_frame.pack(fill='both', expand=True)
         
-        # OpenFAST executable selection
-        exe_frame = ttk.LabelFrame(main_frame, text="OpenFAST Executable", padding="10")
-        exe_frame.pack(fill='x', pady=5)
+        # Configuration frame for executable and threading
+        config_frame = ttk.LabelFrame(main_frame, text="Run Configuration", padding="10")
+        config_frame.pack(fill='x', pady=5)
         
-        ttk.Label(exe_frame, text="OpenFAST Path:").pack(side='left', padx=5)
-        ttk.Entry(exe_frame, textvariable=self.openfast_exe, width=50).pack(side='left', expand=True, fill='x', padx=5)
-        ttk.Button(exe_frame, text="Browse", command=self.browse_openfast_exe).pack(side='left', padx=5)
+        ttk.Label(config_frame, text="OpenFAST Path:").grid(row=0, column=0, sticky='w', padx=5, pady=2)
+        ttk.Entry(config_frame, textvariable=self.openfast_exe, width=50).grid(row=0, column=1, sticky='ew', padx=5, pady=2)
+        ttk.Button(config_frame, text="Browse", command=self.browse_openfast_exe).grid(row=0, column=2, padx=5, pady=2)
         
+        ttk.Label(config_frame, text="Number of parallel runs:").grid(row=1, column=0, sticky='w', padx=5, pady=2)
+        ttk.Spinbox(config_frame, from_=1, to=os.cpu_count() or 8, textvariable=self.num_threads, width=8).grid(row=1, column=1, sticky='w', padx=5, pady=2)
+        
+        config_frame.columnconfigure(1, weight=1)
+
         # Test case selection
         case_frame = ttk.LabelFrame(main_frame, text="Test Cases", padding="10")
         case_frame.pack(fill='both', expand=True, pady=5)
         
-        # Buttons
+        # Buttons for controlling the list and running tests
         btn_frame = ttk.Frame(case_frame)
         btn_frame.pack(fill='x', pady=5)
         
         ttk.Button(btn_frame, text="Load Test Cases", command=self.load_test_cases).pack(side='left', padx=5)
-        ttk.Button(btn_frame, text="Run Selected", command=self.run_selected_cases, 
-                   style="Accent.TButton").pack(side='left', padx=5)
+        ttk.Button(btn_frame, text="Select All", command=self.select_all_cases).pack(side='left', padx=5)
+        ttk.Button(btn_frame, text="Deselect All", command=self.deselect_all_cases).pack(side='left', padx=5)
+        self.run_button = ttk.Button(btn_frame, text="Run Selected", command=self.run_selected_cases, style="Accent.TButton")
+        self.run_button.pack(side='left', padx=20)
         
-        # Test case list with checkboxes
+        # Test case list
         list_frame = ttk.Frame(case_frame)
         list_frame.pack(fill='both', expand=True)
         
-        # Create treeview for test cases
         columns = ('Status', 'Parameters', 'Runtime', 'Result')
-        self.case_tree = ttk.Treeview(list_frame, columns=columns, show='headings', height=10)
+        self.case_tree = ttk.Treeview(list_frame, columns=columns, show='headings', height=10, selectmode='extended')
         
-        self.case_tree.heading('#0', text='Test Case')
         self.case_tree.heading('Status', text='Status')
         self.case_tree.heading('Parameters', text='Modified Parameters')
         self.case_tree.heading('Runtime', text='Runtime')
         self.case_tree.heading('Result', text='Result')
         
+        # Use column #0 for the test case name
         self.case_tree.column('#0', width=150, anchor='w')
+        self.case_tree.heading('#0', text='Test Case')
+
         self.case_tree.column('Status', width=100, anchor='w')
         self.case_tree.column('Parameters', width=300, anchor='w')
         self.case_tree.column('Runtime', width=100, anchor='center')
         self.case_tree.column('Result', width=200, anchor='w')
         
-        # Scrollbars for treeview
         tree_scroll_y = ttk.Scrollbar(list_frame, orient="vertical", command=self.case_tree.yview)
         tree_scroll_x = ttk.Scrollbar(list_frame, orient="horizontal", command=self.case_tree.xview)
         self.case_tree.configure(yscrollcommand=tree_scroll_y.set, xscrollcommand=tree_scroll_x.set)
@@ -146,7 +160,6 @@ class OpenFASTTestCaseGUI:
         self.run_log = scrolledtext.ScrolledText(log_frame, height=10, width=80, wrap=tk.WORD)
         self.run_log.pack(fill='both', expand=True)
         
-        # Store test case data
         self.test_cases = {}
         
     def create_file_selection_section(self, parent):
@@ -368,7 +381,7 @@ class OpenFASTTestCaseGUI:
                 self.file_structure[file_key] = {'path': file_path, 'params': {}}
 
                 # Find all sub-files referenced in the current file
-                newly_found_files = self._find_referenced_files(file_path, base_dir)
+                newly_found_files = self._find_referenced_files(file_path, file_path.parent)
                 
                 for new_key, new_path in newly_found_files.items():
                     if new_path not in processed_paths:
@@ -667,7 +680,6 @@ class OpenFASTTestCaseGUI:
             parameter_values = self.generate_parameter_values(num_cases)
             
             test_summary = []
-            base_dir = Path(self.base_fst_path.get()).parent
             
             for i in range(num_cases):
                 case_name = f"case_{i+1:03d}"
@@ -793,22 +805,31 @@ class OpenFASTTestCaseGUI:
         parameter_values = []
         num_params = len(self.parameter_entries)
 
-        if self.distribution_var.get() == "latin_hypercube":
+        try:
             from scipy.stats import qmc
+            scipy_available = True
+        except ImportError:
+            scipy_available = False
+            if self.distribution_var.get() == "latin_hypercube":
+                self.log("Warning: 'scipy' is not installed. Latin Hypercube sampling is unavailable. Falling back to uniform.")
+                self.distribution_var.set("uniform")
+
+        if self.distribution_var.get() == "latin_hypercube" and scipy_available:
             sampler = qmc.LatinHypercube(d=num_params)
             sample = sampler.sample(n=num_cases)
         else:
-            sample = np.random.rand(num_cases, num_params) # Fallback
+            sample = np.random.rand(num_cases, num_params) # Fallback for uniform scaling
 
         for j, param_entry in enumerate(self.parameter_entries):
             min_val = param_entry['min_var'].get()
             max_val = param_entry['max_var'].get()
             dist = self.distribution_var.get()
 
-            if dist == "uniform":
-                values = np.linspace(min_val, max_val, num_cases)
-            elif dist == "latin_hypercube":
+            if dist == "latin_hypercube" and scipy_available:
+                # Scale the uniform (0,1) sample to the specified range
                 values = qmc.scale(sample, [min_val]*num_params, [max_val]*num_params)[:, j]
+            elif dist == "uniform":
+                values = np.linspace(min_val, max_val, num_cases)
             elif dist == "normal":
                 mean = (min_val + max_val) / 2
                 std_dev = (max_val - mean) / 3 # 99.7% within range
@@ -883,38 +904,81 @@ class OpenFASTTestCaseGUI:
             self.test_cases[item_id] = {
                 'path': Path(test_dir) / case_name,
                 'fst_file': case_info['fst_file'],
-                'item_id': item_id,
                 'name': case_name
             }
         self.run_log_message(f"Loaded {len(self.test_cases)} test cases from {test_dir}")
-            
+        self.select_all_cases()
+
+    def select_all_cases(self):
+        """Select all test cases in the tree view."""
+        all_items = self.case_tree.get_children()
+        self.case_tree.selection_set(all_items)
+
+    def deselect_all_cases(self):
+        """Deselect all test cases in the tree view."""
+        self.case_tree.selection_set([])
+
     def run_selected_cases(self):
-        """Run selected test cases in a separate thread."""
+        """Set up and start the multi-threaded test execution."""
         if not self.openfast_exe.get() or not Path(self.openfast_exe.get()).exists():
-            messagebox.showerror("Error", "Please select a valid OpenFAST executable")
+            messagebox.showerror("Error", "Please select a valid OpenFAST executable.")
             return
             
         selected_items = self.case_tree.selection()
         if not selected_items:
-            messagebox.showwarning("Warning", "No test cases selected to run")
+            messagebox.showwarning("Warning", "No test cases selected to run.")
             return
             
         if not messagebox.askyesno("Confirm", f"This will run {len(selected_items)} OpenFAST simulations. Continue?"):
             return
             
+        # Reset progress and clear job queue
         self.progress_var.set(0)
+        self.completed_cases = 0
+        self.total_cases_to_run = len(selected_items)
+        while not self.job_queue.empty():
+            self.job_queue.get()
+
+        # Populate the job queue with the selected test cases
+        for item_id in selected_items:
+            self.job_queue.put(item_id)
         
-        thread = threading.Thread(target=self.run_cases_thread, args=(selected_items,), daemon=True)
-        thread.start()
+        # Disable the run button to prevent multiple concurrent runs
+        self.run_button.config(state='disabled')
         
-    def run_cases_thread(self, item_ids):
-        """Worker thread for running simulations."""
-        total_cases = len(item_ids)
+        # Start the manager thread that will spawn workers
+        manager_thread = threading.Thread(target=self.run_manager_thread, daemon=True)
+        manager_thread.start()
+
+    def run_manager_thread(self):
+        """Manages worker threads for running simulations."""
+        num_workers = self.num_threads.get()
+        self.message_queue.put(('log', f"Starting {self.total_cases_to_run} simulations with {num_workers} parallel workers..."))
         
-        for i, item_id in enumerate(item_ids):
+        threads = []
+        for _ in range(num_workers):
+            t = threading.Thread(target=self.run_worker, daemon=True)
+            t.start()
+            threads.append(t)
+            
+        # Wait for the queue to be empty (all jobs processed)
+        self.job_queue.join()
+        
+        # All workers are done
+        self.message_queue.put(('log', "\n--- All selected tests completed. ---"))
+        self.message_queue.put(('enable_run_button', None))
+
+    def run_worker(self):
+        """A worker thread that processes test cases from the job queue."""
+        while True:
+            try:
+                item_id = self.job_queue.get_nowait()
+            except queue.Empty:
+                return # No more jobs left
+            
             case_data = self.test_cases[item_id]
             self.message_queue.put(('tree_update', (item_id, 'Status', 'Running')))
-            self.message_queue.put(('log', f"\n--- Running {case_data['name']} ---"))
+            self.message_queue.put(('log', f"--- Running {case_data['name']} ---"))
             
             start_time = datetime.now()
             try:
@@ -925,8 +989,9 @@ class OpenFASTTestCaseGUI:
                     text=True, encoding='utf-8', errors='ignore'
                 )
                 
+                # Log output line by line
                 for line in iter(process.stdout.readline, ''):
-                    self.message_queue.put(('log', line.strip()))
+                    self.message_queue.put(('log', f"[{case_data['name']}] {line.strip()}"))
                 process.wait()
                 
                 runtime = (datetime.now() - start_time).total_seconds()
@@ -938,15 +1003,21 @@ class OpenFASTTestCaseGUI:
             except Exception as e:
                 runtime = (datetime.now() - start_time).total_seconds()
                 result, status = f"Exception: {str(e)}", "Failed"
-                self.message_queue.put(('log', f"FATAL ERROR: {str(e)}"))
-                
+                self.message_queue.put(('log', f"FATAL ERROR in {case_data['name']}: {str(e)}"))
+            
+            # Update GUI via the main thread's queue
             self.message_queue.put(('tree_update', (item_id, 'Status', status)))
             self.message_queue.put(('tree_update', (item_id, 'Runtime', f"{runtime:.1f}s")))
             self.message_queue.put(('tree_update', (item_id, 'Result', result)))
-            self.message_queue.put(('progress', (i + 1) / total_cases * 100))
             
-        self.message_queue.put(('log', "\n--- All selected tests completed. ---"))
-        
+            # Update overall progress safely
+            with self.progress_lock:
+                self.completed_cases += 1
+                progress = (self.completed_cases / self.total_cases_to_run) * 100
+                self.message_queue.put(('progress', progress))
+            
+            self.job_queue.task_done()
+
     def show_file_structure(self):
         """Show discovered file structure in a new window."""
         if not self.file_structure:
@@ -1080,7 +1151,9 @@ class OpenFASTTestCaseGUI:
                         self.case_tree.set(item_id, column, value)
                 elif msg_type == 'progress':
                     self.progress_bar['value'] = msg_data
-                    
+                elif msg_type == 'enable_run_button':
+                    self.run_button.config(state='normal')
+
         except queue.Empty:
             pass
         finally:
