@@ -1,0 +1,84 @@
+{
+    "general": {
+        "FST File": "5MW_OC4Semi_WSt_WavesWN.fst",
+        "Generated": "2025-07-09T23:39:10.594308"
+    },
+    "turbine": {
+        "num_blades": 3,
+        "blade_length": 63.0,
+        "hub_radius": 1.5,
+        "precone": -2.5,
+        "overhang": -5.0191,
+        "shaft_tilt": -5.0,
+        "tower_to_shaft": 1.96256,
+        "tower_height": 87.6,
+        "platform_ref_z": 0.0
+    },
+    "platform": {},
+    "mooring": {
+        "points": [
+            {
+                "id": 1,
+                "type": "Fixed",
+                "x": 418.8,
+                "y": 725.383,
+                "z": -200.0
+            },
+            {
+                "id": 2,
+                "type": "Fixed",
+                "x": -837.6,
+                "y": 0.0,
+                "z": -200.0
+            },
+            {
+                "id": 3,
+                "type": "Fixed",
+                "x": 418.8,
+                "y": -725.383,
+                "z": -200.0
+            },
+            {
+                "id": 4,
+                "type": "Vessel",
+                "x": 20.434,
+                "y": 35.393,
+                "z": -14.0
+            },
+            {
+                "id": 5,
+                "type": "Vessel",
+                "x": -40.868,
+                "y": 0.0,
+                "z": -14.0
+            },
+            {
+                "id": 6,
+                "type": "Vessel",
+                "x": 20.434,
+                "y": -35.393,
+                "z": -14.0
+            }
+        ],
+        "lines": [
+            {
+                "id": 1,
+                "attach_a": 1,
+                "attach_b": 4
+            },
+            {
+                "id": 2,
+                "attach_a": 2,
+                "attach_b": 5
+            },
+            {
+                "id": 3,
+                "attach_a": 3,
+                "attach_b": 6
+            }
+        ]
+    },
+    "environment": {
+        "water_depth": 200.0
+    }
+}

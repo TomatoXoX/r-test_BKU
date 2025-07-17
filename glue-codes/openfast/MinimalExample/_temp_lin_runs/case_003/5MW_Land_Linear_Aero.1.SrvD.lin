@@ -1,0 +1,27 @@
+
+Linearized model: Predictions were generated on 03-Jul-2025 at 03:21:57 using OpenFAST, compiled on Jun 19 2025 at 03:54:01 as a 64-bit application using single precision at commit v4.1.0
+ linked with  NWTC Subroutine Library; ElastoDyn; InflowWind; AeroDyn; ServoDyn
+
+Description from the FAST input file: NREL                   MW          - Baseline Wind Turbine (Onshore), Linearization with AeroDyn + ED
+
+Simulation information:
+   Simulation time:                     0.0000 s
+   Rotor Speed:                         0.2590 rad/s
+   Azimuth:                             0.0000 rad
+   Wind Speed:                          8.0000 m/s
+   Number of continuous states:         0
+   Number of discrete states:           0
+   Number of constraint states:         0
+   Number of inputs:                    0
+   Number of outputs:                   2
+   Jacobians included in this file?    No
+
+Order of outputs:
+        Row   Operating Point                                                   Rotating Frame? Derivative Order Description
+   ---------- ---------------                                                   --------------- ---------------- -----------
+          1    0.000000000000E+000                                                     F               0         GenPwr, (kW)
+          2    0.000000000000E+000                                                     F               0         GenTq, (kN-m)
+
+
+Linearized state matrices:
+

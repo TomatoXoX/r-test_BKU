@@ -1,0 +1,179 @@
+{
+    "general": {
+        "FST File": "5MW_TLP_DLL_WTurb_WavesIrr_WavesMulti.fst",
+        "Generated": "2025-07-09T04:01:38.478502"
+    },
+    "turbine": {
+        "num_blades": 3,
+        "blade_length": 63.0,
+        "hub_radius": 1.5,
+        "precone": -2.5,
+        "overhang": -5.0191,
+        "shaft_tilt": -5.0,
+        "tower_to_shaft": 1.96256,
+        "tower_height": 87.6,
+        "platform_ref_z": -0.0
+    },
+    "platform": {},
+    "mooring": {
+        "points": [
+            {
+                "id": 1,
+                "type": "fixed",
+                "x": 27.0,
+                "y": 0.0,
+                "z": -200.0
+            },
+            {
+                "id": 2,
+                "type": "fixed",
+                "x": 0.0,
+                "y": 27.0,
+                "z": -200.0
+            },
+            {
+                "id": 3,
+                "type": "fixed",
+                "x": -27.0,
+                "y": 0.0,
+                "z": -200.0
+            },
+            {
+                "id": 4,
+                "type": "fixed",
+                "x": 0.0,
+                "y": -27.0,
+                "z": -200.0
+            },
+            {
+                "id": 5,
+                "type": "fixed",
+                "x": 27.0,
+                "y": 0.0,
+                "z": -200.0
+            },
+            {
+                "id": 6,
+                "type": "fixed",
+                "x": 0.0,
+                "y": 27.0,
+                "z": -200.0
+            },
+            {
+                "id": 7,
+                "type": "fixed",
+                "x": -27.0,
+                "y": 0.0,
+                "z": -200.0
+            },
+            {
+                "id": 8,
+                "type": "fixed",
+                "x": 0.0,
+                "y": -27.0,
+                "z": -200.0
+            },
+            {
+                "id": 9,
+                "type": "vessel",
+                "x": 27.0,
+                "y": 0.0,
+                "z": -47.89
+            },
+            {
+                "id": 10,
+                "type": "vessel",
+                "x": 0.0,
+                "y": 27.0,
+                "z": -47.89
+            },
+            {
+                "id": 11,
+                "type": "vessel",
+                "x": -27.0,
+                "y": 0.0,
+                "z": -47.89
+            },
+            {
+                "id": 12,
+                "type": "vessel",
+                "x": 0.0,
+                "y": -27.0,
+                "z": -47.89
+            },
+            {
+                "id": 13,
+                "type": "vessel",
+                "x": 27.0,
+                "y": 0.0,
+                "z": -47.89
+            },
+            {
+                "id": 14,
+                "type": "vessel",
+                "x": 0.0,
+                "y": 27.0,
+                "z": -47.89
+            },
+            {
+                "id": 15,
+                "type": "vessel",
+                "x": -27.0,
+                "y": 0.0,
+                "z": -47.89
+            },
+            {
+                "id": 16,
+                "type": "vessel",
+                "x": 0.0,
+                "y": -27.0,
+                "z": -47.89
+            }
+        ],
+        "lines": [
+            {
+                "id": 1,
+                "attach_a": 1,
+                "attach_b": 9
+            },
+            {
+                "id": 2,
+                "attach_a": 2,
+                "attach_b": 10
+            },
+            {
+                "id": 3,
+                "attach_a": 3,
+                "attach_b": 11
+            },
+            {
+                "id": 4,
+                "attach_a": 4,
+                "attach_b": 12
+            },
+            {
+                "id": 5,
+                "attach_a": 5,
+                "attach_b": 13
+            },
+            {
+                "id": 6,
+                "attach_a": 6,
+                "attach_b": 14
+            },
+            {
+                "id": 7,
+                "attach_a": 7,
+                "attach_b": 15
+            },
+            {
+                "id": 8,
+                "attach_a": 8,
+                "attach_b": 16
+            }
+        ]
+    },
+    "environment": {
+        "water_depth": 200.0
+    }
+}

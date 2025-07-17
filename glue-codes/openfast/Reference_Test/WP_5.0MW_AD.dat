@@ -1,0 +1,32 @@
+------- AeroDyn v15 INPUT FILE -------------------------------------------------
+WindPACT 5.0 MW Baseline Wind Turbine aerodynamic parameters for OpenFAST.
+---------------------- GENERAL OPTIONS -----------------------------------------
+1.225         AirDens         - Air density (kg/m^3)
+1.4639E-05    KinVisc         - Kinematic viscosity of air (m^2/s)
+0.005         DTAero          - Time step for aerodynamic calculations (s)
+"EQUIL"       IndModel        - Inflow induction model {"NONE", "STEADY", "EQUIL", "DYN"}
+"PRANDTL"     LossModel       - Tip- and hub-loss model {"NONE", "PRANDTL"}
+"BEDDOES"     StallMod        - Dynamic stall model {"NONE", "STEADY", "BEDDOES", "BL"}
+1             AFAeroMod       - Airfoil aerodynamics model {1: native AeroDyn 2: external}
+1             TwrPotent       - Tower-influence model {0: none, 1: potential flow, 2: Bak model}
+False         TwrShadow       - Tower-shadow model (flag)
+False         TwrAero         - Tower aerodynamics model (flag)
+False         CavitCheck      - Perform cavitation check? (flag) [only for MHK turbines]
+101325        Patm            - Atmospheric pressure (Pa) [used only if CavitCheck=True]
+1700          Pvap            - Vapour pressure of water (Pa) [used only if CavitCheck=True]
+0.0           FluidDepth      - Water depth (m) [used only if CavitCheck=True]
+---------------------- BLADE-ELEMENT/MOMENTUM THEORY OPTIONS -------------------
+2             SkewMod         - Skewed-wake correction model {1: uncoupled, 2: Pitt/Peters, 3: Oye}
+"AFAirfoil"   TipLossMethod   - Tip-loss method {"PRANDTL", "G_L", "AFAirfoil"}
+"AFAirfoil"   HubLossMethod   - Hub-loss method {"PRANDTL", "AFAirfoil"}
+True          TanInd          - Include tangential induction in BEMT calculations? (flag)
+True          AIDrag          - Include aerodynamic induction due to drag in BEMT calculations? (flag)
+True          TIDrag          - Include tangential induction due to drag in BEMT calculations? (flag)
+---------------------- DYNAMIC B-L STALL OPTIONS -------------------------------
+"DEFAULT"     UAMod           - Unsteady Aero Model {1: Beddoes-Leishman 2: unsteady airfoil data}
+"DEFAULT"     FLookup         - Flag to indicate if an f_stall lookup table is used {True/False}
+---------------------- TOWER AERODYNAMICS --------------------------------------
+1             NumTwrNds       - Number of tower nodes to distribute tower moments
+---------------------- AIRFOIL INFORMATION -------------------------------------
+1             NumAFfiles      - Number of airfoil files
+"WindPACT_5MW_AeroDyn_Blade.dat"    ADBlFile(1) - Blade aerodynamic properties file

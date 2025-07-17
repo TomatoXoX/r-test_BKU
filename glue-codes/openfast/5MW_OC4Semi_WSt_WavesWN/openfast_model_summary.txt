@@ -1,0 +1,24 @@
+================================================================================
+           OPENFAST MODEL SUMMARY REPORT
+           FST File: 5MW_OC4Semi_WSt_WavesWN.fst
+           Generated: 2025-07-09T23:39:10.594308
+================================================================================
+
+--- TURBINE ---
+  num_blades: 3
+  blade_length: 63.0
+  hub_radius: 1.5
+  precone: -2.5
+  overhang: -5.0191
+  shaft_tilt: -5.0
+  tower_to_shaft: 1.96256
+  tower_height: 87.6
+  platform_ref_z: 0.0
+
+--- MOORING ---
+  points: 6 items
+  lines: 3 items
+
+--- ENVIRONMENT ---
+  water_depth: 200.0
+

@@ -25,7 +25,7 @@ False            Echo           - Echo the input file data (flag)
             15   WaveDir        - Incident wave propagation heading direction                         (degrees) [unused when WaveMod=0, 6 or 7]
              1   WaveDirMod     - Directional spreading function {0: none, 1: COS2S}                  (-)       [only used when WaveMod=2,3, or 4]
              1   WaveDirSpread  - Wave direction spreading coefficient ( > 0 )                        (-)       [only used when WaveMod=2,3, or 4 and WaveDirMod=1]
-            13   WaveNDir       - Number of wave directions                                           (-)       [only used when WaveMod=2,3, or 4 and WaveDirMod=1; odd number only]
+            15   WaveNDir       - Number of wave directions                                           (-)       [only used when WaveMod=2,3, or 4 and WaveDirMod=1; odd number only]
             90   WaveDirRange   - Range of wave directions (full range: WaveDir +/- 1/2*WaveDirRange) (degrees) [only used when WaveMod=2,3,or 4 and WaveDirMod=1]
      123456789   WaveSeed(1)    - First  random seed of incident waves [-2147483648 to 2147483647]    (-)       [unused when WaveMod=0, 5, or 6]
 "RANLUX"         WaveSeed(2)    - Second random seed of incident waves [-2147483648 to 2147483647] for intrinsic pRNG, or an alternative pRNG: "RanLux" (-)       [unused when WaveMod=0, 5, or 6]
@@ -45,11 +45,11 @@ False            WvSumQTF       - Full summation-frequency  2nd-order wave kinem
              0   CrestXi        - X-position of the crest (m) [unused when ConstWaveMod=0]
              0   CrestYi        - Y-position of the crest (m) [unused when ConstWaveMod=0]
 ---------------------- CURRENT ------------------------------------------------- [unused with WaveMod=6]
-             0   CurrMod        - Current profile model {0: none=no current, 1: standard, 2: user-defined from routine UserCurrent} (switch)
-             0   CurrSSV0       - Sub-surface current velocity at still water level  (m/s) [used only when CurrMod=1]
+             1   CurrMod        - Current profile model {0: none=no current, 1: standard, 2: user-defined from routine UserCurrent} (switch)
+             1   CurrSSV0       - Sub-surface current velocity at still water level  (m/s) [used only when CurrMod=1]
 "DEFAULT"        CurrSSDir      - Sub-surface current heading direction (degrees) or DEFAULT (string) [used only when CurrMod=1]
             20   CurrNSRef      - Near-surface current reference depth            (meters) [used only when CurrMod=1]
-             0   CurrNSV0       - Near-surface current velocity at still water level (m/s) [used only when CurrMod=1]
+             2   CurrNSV0       - Near-surface current velocity at still water level (m/s) [used only when CurrMod=1]
              0   CurrNSDir      - Near-surface current heading direction         (degrees) [used only when CurrMod=1]
              0   CurrDIV        - Depth-independent current velocity                 (m/s) [used only when CurrMod=1]
              0   CurrDIDir      - Depth-independent current heading direction    (degrees) [used only when CurrMod=1]
