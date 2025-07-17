@@ -1,0 +1,70 @@
+{
+    "generation_date": "2025-07-17T16:16:35.879060",
+    "base_fst_file": "C:/Users/Admin/Documents/HK243/DACN_DHBK/Code/r-test_BKU/glue-codes/openfast/5MW_OC4Semi_WSt_WavesWN/5MW_OC4Semi_WSt_WavesWN.fst",
+    "num_cases": 5,
+    "distribution": "normal",
+    "test_cases": [
+        {
+            "case_name": "case_001",
+            "fst_file": "5MW_OC4Semi_WSt_WavesWN.fst",
+            "parameters": {
+                "Main_FST/AirDens": 1.1802284244506562
+            },
+            "created": "2025-07-17T16:16:35.831285"
+        },
+        {
+            "case_name": "case_002",
+            "fst_file": "5MW_OC4Semi_WSt_WavesWN.fst",
+            "parameters": {
+                "Main_FST/AirDens": 1.0170152654170725
+            },
+            "created": "2025-07-17T16:16:35.847338"
+        },
+        {
+            "case_name": "case_003",
+            "fst_file": "5MW_OC4Semi_WSt_WavesWN.fst",
+            "parameters": {
+                "Main_FST/AirDens": 1.167702035821594
+            },
+            "created": "2025-07-17T16:16:35.863097"
+        },
+        {
+            "case_name": "case_004",
+            "fst_file": "5MW_OC4Semi_WSt_WavesWN.fst",
+            "parameters": {
+                "Main_FST/AirDens": 1.284470546065924
+            },
+            "created": "2025-07-17T16:16:35.879060"
+        },
+        {
+            "case_name": "case_005",
+            "fst_file": "5MW_OC4Semi_WSt_WavesWN.fst",
+            "parameters": {
+                "Main_FST/AirDens": 1.2386048710262152
+            },
+            "created": "2025-07-17T16:16:35.879060"
+        }
+    ],
+    "file_structure": {
+        "Main_FST": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\5MW_OC4Semi_WSt_WavesWN.fst",
+        "EDFile": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\NRELOffshrBsline5MW_OC4DeepCwindSemi_ElastoDyn.dat",
+        "BDBldFile(1)": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\..\\5MW_Baseline\\NRELOffshrBsline5MW_BeamDyn.dat",
+        "InflowFile": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\..\\5MW_Baseline\\NRELOffshrBsline5MW_InflowWind_Steady8mps.dat",
+        "AeroFile": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\NRELOffshrBsline5MW_OC3Hywind_AeroDyn.dat",
+        "ServoFile": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\NRELOffshrBsline5MW_OC4DeepCwindSemi_ServoDyn.dat",
+        "SeaStFile": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\SeaState.dat",
+        "HydroFile": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\NRELOffshrBsline5MW_OC4DeepCwindSemi_HydroDyn.dat",
+        "MooringFile": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\NRELOffshrBsline5MW_OC4DeepCwindSemi_MoorDyn.dat",
+        "BldFile(1)": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\..\\5MW_Baseline\\NRELOffshrBsline5MW_Blade.dat",
+        "TwrFile": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\NRELOffshrBsline5MW_OC4DeepCwindSemi_ElastoDyn_Tower.dat",
+        "AFNames": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\..\\5MW_Baseline\\Airfoils\\Cylinder1.dat",
+        "ADBlFile(1)": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\..\\5MW_Baseline\\NRELOffshrBsline5MW_AeroDyn_blade.dat",
+        "AirfoilFile_2": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\..\\5MW_Baseline\\Airfoils\\Cylinder2.dat",
+        "AirfoilFile_3": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\..\\5MW_Baseline\\Airfoils\\DU40_A17.dat",
+        "AirfoilFile_4": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\..\\5MW_Baseline\\Airfoils\\DU35_A17.dat",
+        "AirfoilFile_5": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\..\\5MW_Baseline\\Airfoils\\DU30_A17.dat",
+        "AirfoilFile_6": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\..\\5MW_Baseline\\Airfoils\\DU25_A17.dat",
+        "AirfoilFile_7": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\..\\5MW_Baseline\\Airfoils\\DU21_A17.dat",
+        "AirfoilFile_8": "C:\\Users\\Admin\\Documents\\HK243\\DACN_DHBK\\Code\\r-test_BKU\\glue-codes\\openfast\\5MW_OC4Semi_WSt_WavesWN\\..\\5MW_Baseline\\Airfoils\\NACA64_A17.dat"
+    }
+}

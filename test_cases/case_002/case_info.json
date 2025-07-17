@@ -1,0 +1,8 @@
+{
+  "case_name": "case_002",
+  "fst_file": "5MW_OC4Semi_WSt_WavesWN.fst",
+  "parameters": {
+    "Main_FST/AirDens": 1.0170152654170725
+  },
+  "created": "2025-07-17T16:16:35.847338"
+}

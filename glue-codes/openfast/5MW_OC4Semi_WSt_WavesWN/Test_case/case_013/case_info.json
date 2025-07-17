@@ -1,0 +1,8 @@
+{
+  "case_name": "case_013",
+  "fst_file": "5MW_OC4Semi_WSt_WavesWN.fst",
+  "parameters": {
+    "InflowFile/HWindSpeed": 7.724137931034482
+  },
+  "created": "2025-07-17T16:21:51.479055"
+}
