@@ -128,7 +128,7 @@ class OpenFASTTestCaseGUI:
         self.num_cases_spinbox.grid(row=0, column=1, sticky=tk.W, padx=5)
         ttk.Label(frame, text="Distribution Type:").grid(row=0, column=2, sticky=tk.W, padx=20)
         self.distribution_var = tk.StringVar(value="grid_search")
-        dist_combo = ttk.Combobox(frame, textvariable=self.distribution_var, values=["grid_search", "latin_hypercube", "uniform", "normal"], width=15)
+        dist_combo = ttk.Combobox(frame, textvariable=self.distribution_var, values=["grid_search", "csv_columnwise", "latin_hypercube", "uniform", "normal"], width=15)
         dist_combo.grid(row=0, column=3, sticky=tk.W, padx=5)
         dist_combo.bind("<<ComboboxSelected>>", self.on_distribution_change)
         
@@ -327,16 +327,23 @@ class OpenFASTTestCaseGUI:
         
         entry_data = {'frame': row_frame, 'file_type': file_type, 'param_name': param_name, 'param_info': param_info, 'widgets': {}}
 
+        # --- CSV Mode Widget (add for all types) ---
+        csv_var = tk.StringVar(value=str(current_val))
+        entry_data['widgets']['csv_lbl'] = ttk.Label(row_frame, text="CSV Values:")
+        entry_data['widgets']['csv_ent'] = ttk.Entry(row_frame, textvariable=csv_var, width=40)
+        entry_data.update({'csv_var': csv_var})
+        csv_var.trace_add("write", self.update_total_cases)
+
         if param_type == 'float':
             start_default, end_default = (current_val * 0.8, current_val * 1.2) if isinstance(current_val, (int, float)) and abs(current_val) > 1e-9 else (-1.0, 1.0)
             start_var, end_var, steps_var = tk.DoubleVar(value=start_default), tk.DoubleVar(value=end_default), tk.IntVar(value=5)
             
-            entry_data['widgets']['range_lbl_s'] = ttk.Label(row_frame, text="Start:"); entry_data['widgets']['range_lbl_s'].grid(row=0, column=1, padx=(10, 2))
-            entry_data['widgets']['range_ent_s'] = ttk.Entry(row_frame, textvariable=start_var, width=10); entry_data['widgets']['range_ent_s'].grid(row=0, column=2)
-            entry_data['widgets']['range_lbl_e'] = ttk.Label(row_frame, text="End:"); entry_data['widgets']['range_lbl_e'].grid(row=0, column=3, padx=5)
-            entry_data['widgets']['range_ent_e'] = ttk.Entry(row_frame, textvariable=end_var, width=10); entry_data['widgets']['range_ent_e'].grid(row=0, column=4)
-            entry_data['widgets']['range_lbl_st'] = ttk.Label(row_frame, text="Steps:"); entry_data['widgets']['range_lbl_st'].grid(row=0, column=5, padx=5)
-            entry_data['widgets']['range_spn_st'] = ttk.Spinbox(row_frame, from_=1, to=100, textvariable=steps_var, width=5); entry_data['widgets']['range_spn_st'].grid(row=0, column=6)
+            entry_data['widgets']['range_lbl_s'] = ttk.Label(row_frame, text="Start:")
+            entry_data['widgets']['range_ent_s'] = ttk.Entry(row_frame, textvariable=start_var, width=10)
+            entry_data['widgets']['range_lbl_e'] = ttk.Label(row_frame, text="End:")
+            entry_data['widgets']['range_ent_e'] = ttk.Entry(row_frame, textvariable=end_var, width=10)
+            entry_data['widgets']['range_lbl_st'] = ttk.Label(row_frame, text="Steps:")
+            entry_data['widgets']['range_spn_st'] = ttk.Spinbox(row_frame, from_=1, to=100, textvariable=steps_var, width=5)
             
             entry_data.update({'start_var': start_var, 'end_var': end_var, 'steps_var': steps_var})
             steps_var.trace_add("write", self.update_total_cases)
@@ -353,42 +360,38 @@ class OpenFASTTestCaseGUI:
                     if name.startswith('range_'): w.grid() if is_range else w.grid_remove()
                     if name.startswith('list_'): w.grid() if not is_range else w.grid_remove()
                 self.update_total_cases()
+            
+            entry_data['update_func'] = update_int_widgets
 
-            entry_data['widgets']['rad_range'] = ttk.Radiobutton(row_frame, text="Range", variable=int_mode_var, value="Range", command=update_int_widgets); entry_data['widgets']['rad_range'].grid(row=0, column=1, sticky='w', padx=5)
-            entry_data['widgets']['rad_list'] = ttk.Radiobutton(row_frame, text="List", variable=int_mode_var, value="List", command=update_int_widgets); entry_data['widgets']['rad_list'].grid(row=1, column=1, sticky='w', padx=5)
+            entry_data['widgets']['rad_range'] = ttk.Radiobutton(row_frame, text="Range", variable=int_mode_var, value="Range", command=update_int_widgets)
+            entry_data['widgets']['rad_list'] = ttk.Radiobutton(row_frame, text="List", variable=int_mode_var, value="List", command=update_int_widgets)
             
             entry_data['widgets']['range_lbl_s'] = ttk.Label(row_frame, text="Start:"); entry_data['widgets']['range_ent_s'] = ttk.Entry(row_frame, textvariable=start_var, width=8)
             entry_data['widgets']['range_lbl_e'] = ttk.Label(row_frame, text="End:"); entry_data['widgets']['range_ent_e'] = ttk.Entry(row_frame, textvariable=end_var, width=8)
             entry_data['widgets']['range_lbl_st'] = ttk.Label(row_frame, text="Steps:"); entry_data['widgets']['range_spn_st'] = ttk.Spinbox(row_frame, from_=1, to=100, textvariable=steps_var, width=5)
             entry_data['widgets']['list_lbl'] = ttk.Label(row_frame, text="List (CSV):"); entry_data['widgets']['list_ent'] = ttk.Entry(row_frame, textvariable=list_var, width=25)
-            
-            entry_data['widgets']['range_lbl_s'].grid(row=0, column=2, sticky='w'); entry_data['widgets']['range_ent_s'].grid(row=0, column=3, sticky='w')
-            entry_data['widgets']['range_lbl_e'].grid(row=0, column=4, sticky='w'); entry_data['widgets']['range_ent_e'].grid(row=0, column=5, sticky='w')
-            entry_data['widgets']['range_lbl_st'].grid(row=0, column=6, sticky='w'); entry_data['widgets']['range_spn_st'].grid(row=0, column=7, sticky='w')
-            entry_data['widgets']['list_lbl'].grid(row=1, column=2, sticky='w'); entry_data['widgets']['list_ent'].grid(row=1, column=3, columnspan=5, sticky='w')
 
             entry_data.update({'int_mode_var': int_mode_var, 'start_var': start_var, 'end_var': end_var, 'steps_var': steps_var, 'list_var': list_var})
             steps_var.trace_add("write", self.update_total_cases); list_var.trace_add("write", self.update_total_cases)
-            update_int_widgets()
 
         elif param_type == 'bool':
             bool_var = tk.StringVar(value="Vary (True & False)")
-            entry_data['widgets']['bool_lbl'] = ttk.Label(row_frame, text="Value:"); entry_data['widgets']['bool_lbl'].grid(row=0, column=1, padx=(10,2))
-            entry_data['widgets']['bool_combo'] = ttk.Combobox(row_frame, textvariable=bool_var, values=["Vary (True & False)", "True", "False"], width=20); entry_data['widgets']['bool_combo'].grid(row=0, column=2, columnspan=3)
+            entry_data['widgets']['bool_lbl'] = ttk.Label(row_frame, text="Value:")
+            entry_data['widgets']['bool_combo'] = ttk.Combobox(row_frame, textvariable=bool_var, values=["Vary (True & False)", "True", "False"], width=20)
             entry_data.update({'bool_var': bool_var}); bool_var.trace_add("write", self.update_total_cases)
 
         elif param_type == 'option':
             options_var = tk.StringVar(value=f'"{current_val}"')
-            entry_data['widgets']['opt_lbl'] = ttk.Label(row_frame, text="Options (CSV):"); entry_data['widgets']['opt_lbl'].grid(row=0, column=1, padx=(10,2))
-            entry_data['widgets']['opt_ent'] = ttk.Entry(row_frame, textvariable=options_var, width=30); entry_data['widgets']['opt_ent'].grid(row=0, column=2, columnspan=5, sticky='ew')
+            entry_data['widgets']['opt_lbl'] = ttk.Label(row_frame, text="Options (CSV):")
+            entry_data['widgets']['opt_ent'] = ttk.Entry(row_frame, textvariable=options_var, width=30)
             entry_data.update({'options_var': options_var}); options_var.trace_add("write", self.update_total_cases)
 
         info_text = f"[{param_info.get('unit', '')}] (Type: {param_type}, Current: {current_val})"
-        info_label = ttk.Label(row_frame, text=info_text, foreground='gray'); info_label.grid(row=0, column=8, padx=5, sticky='w')
+        info_label = ttk.Label(row_frame, text=info_text, foreground='gray')
         entry_data['widgets']['info_lbl'] = info_label
         
         remove_btn = ttk.Button(row_frame, text="Remove", command=lambda e=entry_data: self.remove_parameter(e))
-        remove_btn.grid(row=0, column=9, rowspan=2, padx=10)
+        entry_data['widgets']['remove_btn'] = remove_btn
         
         row_frame.columnconfigure(8, weight=1)
         self.parameter_entries.append(entry_data)
@@ -439,7 +442,6 @@ class OpenFASTTestCaseGUI:
                     
                     value = parameter_values[j][i]
                     
-                    # FIX: Convert numpy types to native Python types for JSON serialization
                     if isinstance(value, np.integer):
                         value = int(value)
                     elif isinstance(value, np.floating):
@@ -527,6 +529,39 @@ class OpenFASTTestCaseGUI:
                 individual_param_steps.append(values if len(values) > 0 else [entry['param_info']['original_value']])
             combinations = list(itertools.product(*individual_param_steps))
             return np.array(combinations, dtype=object).T
+        elif dist == "csv_columnwise":
+            self.log("Using CSV Column-wise generation.")
+            if not self.parameter_entries: return np.array([])
+            
+            all_value_lists, param_names_for_error = [], []
+            for entry in self.parameter_entries:
+                param_info, param_name = entry['param_info'], entry['param_name']
+                param_type = param_info['type']
+                param_names_for_error.append(param_name)
+                csv_string = entry['csv_var'].get()
+                str_values = [item.strip() for item in csv_string.split(',') if item.strip()]
+                
+                try:
+                    if param_type == 'float': typed_values = [float(v) for v in str_values]
+                    elif param_type == 'int': typed_values = [int(v) for v in str_values]
+                    elif param_type == 'bool': typed_values = [v.lower() in ['true', '1', 't', 'y', 'yes'] for v in str_values]
+                    elif param_type == 'option': typed_values = [v.strip('"\'') for v in str_values]
+                    else: typed_values = str_values
+                    all_value_lists.append(typed_values)
+                except ValueError as e:
+                    msg = f"Invalid value in CSV for parameter '{param_name}'. Please ensure all values match the type '{param_type}'. Details: {e}"
+                    self.log(f"Error: {msg}"); messagebox.showerror("Input Error", msg); return np.array([])
+
+            if not all_value_lists: self.log("No values provided in CSV inputs."); return np.array([])
+            first_len = len(all_value_lists[0])
+            if first_len == 0: self.log("CSV inputs are empty."); return np.array([])
+            for i, lst in enumerate(all_value_lists):
+                if len(lst) != first_len:
+                    msg = f"All CSV inputs must have the same number of values. Expected {first_len}, but parameter '{param_names_for_error[i]}' has {len(lst)}."
+                    self.log(f"Error: {msg}"); messagebox.showerror("Input Error", msg); return np.array([])
+            
+            self.log(f"Validated {len(all_value_lists)} parameters with {first_len} cases each.")
+            return np.array(all_value_lists, dtype=object)
         else: # Sampling distributions
             self.log(f"Using {dist} sampling for {num_cases} cases.")
             parameter_values, numeric_params = [], [p for p in self.parameter_entries if p['param_info']['type'] in ['float', 'int']]
@@ -546,17 +581,58 @@ class OpenFASTTestCaseGUI:
             return np.array(parameter_values)
 
     def on_distribution_change(self, event=None):
-        is_grid_search = (self.distribution_var.get() == "grid_search")
-        self.num_cases_spinbox.config(state='normal' if not is_grid_search else 'disabled')
+        dist_mode = self.distribution_var.get()
+        is_grid = dist_mode == "grid_search"
+        is_csv = dist_mode == "csv_columnwise"
+        is_sampling = not is_grid and not is_csv
+
+        self.num_cases_spinbox.config(state='disabled' if is_grid or is_csv else 'normal')
+
         for entry in self.parameter_entries:
+            # Hide all controllable widgets first
+            for w in entry['widgets'].values():
+                if hasattr(w, 'grid_remove'): w.grid_remove()
+
             param_type = entry['param_info']['type']
-            is_numeric = param_type in ['float', 'int']
-            for widget in entry['widgets'].values():
-                widget.config(state='normal' if is_grid_search or is_numeric else 'disabled')
+            if is_csv:
+                entry['widgets']['csv_lbl'].grid(row=0, column=1, padx=(10, 2))
+                entry['widgets']['csv_ent'].grid(row=0, column=2, columnspan=5, sticky='ew')
+            else:  # Grid or Sampling
+                # Restore widget layout from add_parameter_with_info
+                if param_type == 'float':
+                    entry['widgets']['range_lbl_s'].grid(row=0, column=1, padx=(10, 2)); entry['widgets']['range_ent_s'].grid(row=0, column=2)
+                    entry['widgets']['range_lbl_e'].grid(row=0, column=3, padx=5); entry['widgets']['range_ent_e'].grid(row=0, column=4)
+                    entry['widgets']['range_lbl_st'].grid(row=0, column=5, padx=5); entry['widgets']['range_spn_st'].grid(row=0, column=6)
+                elif param_type == 'int':
+                    entry['widgets']['rad_range'].grid(row=0, column=1, sticky='w', padx=5)
+                    entry['widgets']['rad_list'].grid(row=1, column=1, sticky='w', padx=5)
+                    if 'update_func' in entry: entry['update_func']()
+                elif param_type == 'bool':
+                    entry['widgets']['bool_lbl'].grid(row=0, column=1, padx=(10,2))
+                    entry['widgets']['bool_combo'].grid(row=0, column=2, columnspan=3)
+                elif param_type == 'option':
+                    entry['widgets']['opt_lbl'].grid(row=0, column=1, padx=(10,2))
+                    entry['widgets']['opt_ent'].grid(row=0, column=2, columnspan=5, sticky='ew')
+
+                # Set widget state based on mode (Grid vs Sampling)
+                if is_sampling:
+                    is_numeric = param_type in ['float', 'int']
+                    for name, widget in entry['widgets'].items():
+                        if hasattr(widget, 'config') and name not in ['info_lbl', 'remove_btn']:
+                            widget.config(state='disabled')
+                    if is_numeric:
+                        entry['widgets']['range_ent_s'].config(state='normal')
+                        entry['widgets']['range_ent_e'].config(state='normal')
+
+            # Always show the non-controllable widgets
+            entry['widgets']['info_lbl'].grid(row=0, column=8, padx=5, sticky='w')
+            entry['widgets']['remove_btn'].grid(row=0, column=9, rowspan=2, padx=10)
+        
         self.update_total_cases()
 
     def update_total_cases(self, *args):
-        if self.distribution_var.get() == "grid_search":
+        dist_mode = self.distribution_var.get()
+        if dist_mode == "grid_search":
             total_cases = 1 if self.parameter_entries else 0
             for entry in self.parameter_entries:
                 param_type = entry['param_info']['type']
@@ -570,6 +646,14 @@ class OpenFASTTestCaseGUI:
                     elif param_type == 'option':
                         total_cases *= max(1, len([o for o in entry['options_var'].get().split(',') if o.strip()]))
                 except (tk.TclError, ValueError): pass
+            self.num_cases.set(total_cases)
+        elif dist_mode == "csv_columnwise":
+            total_cases = 0
+            if self.parameter_entries:
+                try:
+                    csv_str = self.parameter_entries[0]['csv_var'].get()
+                    total_cases = len([i for i in csv_str.split(',') if i.strip()])
+                except (tk.TclError, IndexError): pass
             self.num_cases.set(total_cases)
             
     def browse_fst_file(self):
@@ -664,6 +748,7 @@ class OpenFASTTestCaseGUI:
         for p in self.parameter_entries:
             p_data = {'file_type': p['file_type'], 'param_name': p['param_name']}
             param_type = p['param_info']['type']
+            p_data['csv_list'] = p['csv_var'].get()
             if param_type == 'float': p_data.update({'start': p['start_var'].get(), 'end': p['end_var'].get(), 'steps': p['steps_var'].get()})
             elif param_type == 'int': p_data.update({'int_mode': p['int_mode_var'].get(), 'start': p['start_var'].get(), 'end': p['end_var'].get(), 'steps': p['steps_var'].get(), 'int_list': p['list_var'].get()})
             elif param_type == 'bool': p_data.update({'bool_choice': p['bool_var'].get()})
@@ -691,6 +776,9 @@ class OpenFASTTestCaseGUI:
                     self.add_parameter_with_info(file_type, param_name, param_info)
                     entry = self.parameter_entries[-1]
                     param_type = entry['param_info']['type']
+                    
+                    if 'csv_list' in param_config: entry['csv_var'].set(param_config.get('csv_list', ''))
+
                     if param_type == 'float':
                         entry['start_var'].set(param_config.get('start', 0)); entry['end_var'].set(param_config.get('end', 1)); entry['steps_var'].set(param_config.get('steps', 5))
                     elif param_type == 'int':
@@ -698,11 +786,6 @@ class OpenFASTTestCaseGUI:
                         entry['int_mode_var'].set(mode)
                         entry['start_var'].set(param_config.get('start', 0)); entry['end_var'].set(param_config.get('end', 1)); entry['steps_var'].set(param_config.get('steps', 5))
                         entry['list_var'].set(param_config.get('int_list', '1,2,3'))
-                        # Manually trigger the UI update for the loaded mode by invoking one of the radio buttons
-                        if mode == 'List':
-                            entry['widgets']['rad_list'].invoke()
-                        else:
-                            entry['widgets']['rad_range'].invoke()
                     elif param_type == 'bool': entry['bool_var'].set(param_config.get('bool_choice', 'Vary (True & False)'))
                     elif param_type == 'option': entry['options_var'].set(param_config.get('options_list', ''))
                 else: self.log(f"Warning: Could not find '{param_name}' in '{file_type}' from config.")
@@ -740,8 +823,9 @@ def main():
     app.log("Welcome! Now with enhanced data type support."); app.log("=" * 60)
     app.log("1. Discover parameters. The GUI will detect their types (int, float, bool, option).")
     app.log("2. For 'grid_search', configure each parameter using its specific controls.")
-    app.log("3. For sampling distributions, non-numeric parameters will be disabled.")
-    app.log("4. Generate and run your test cases."); app.log("=" * 60)
+    app.log("3. For 'csv_columnwise', provide comma-separated values for each parameter.")
+    app.log("4. For sampling distributions, non-numeric parameters will be disabled.")
+    app.log("5. Generate and run your test cases."); app.log("=" * 60)
     root.mainloop()
 
 if __name__ == "__main__":
