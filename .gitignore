@@ -9,6 +9,14 @@
 .out
 .sum
 .dat
+.ico
+.txt
+.log
+.pkg
+.toc
+.html
+.pdf
+.png
 # cmake outputs
 CMakeCache.txt
 CMakeFiles
