@@ -8,14 +8,14 @@
 .env
 .out
 .sum
-
+.dat
 # cmake outputs
 CMakeCache.txt
 CMakeFiles
 *.cmake
 Makefile
 install_manifest.txt
-
+.out
 # compiled outputs
 *.dll
 *.so
@@ -25,7 +25,7 @@ install_manifest.txt
 vtk*
 *.lib
 .outb
-
+.csv
 # temporary matlab files
 *.asv
 
@@ -47,3 +47,4 @@ _*.png
 
 # temporary python directory (only happens if running test case locally)
 __pycache__
+.Rproj.user
